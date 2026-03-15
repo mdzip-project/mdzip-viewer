@@ -33,7 +33,7 @@
  * inputEl.addEventListener('change', async (e) => {
  *   const file   = (e.target as HTMLInputElement).files![0];
  *   const bytes  = await loadFromBlob(file);
- *   const result = new MdzViewer().render(bytes);
+ *   const result = await new MdzViewer().render(bytes);
  *   document.getElementById('content')!.innerHTML = result.html;
  * });
  * ```
@@ -58,7 +58,7 @@ export async function loadFromBlob(file: Blob): Promise<Uint8Array> {
  * import { MdzViewer }   from 'mdz-viewer';
  *
  * const bytes  = await loadFromUrl('/docs/guide.mdz');
- * const result = new MdzViewer().render(bytes);
+ * const result = await new MdzViewer().render(bytes);
  * ```
  */
 export async function loadFromUrl(url: string, init?: RequestInit): Promise<Uint8Array> {

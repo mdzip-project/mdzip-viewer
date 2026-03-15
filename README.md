@@ -1,12 +1,12 @@
 # mdz-viewer
 
-> TypeScript viewer for MarkdownZip (`.mdz`) packages, published as an npm library.
+> Render MarkdownZip (`.mdz`) files to HTML, powered by `mdz-core-js`.
 
 [![CI](https://github.com/kylemwhite/mdz-reader/actions/workflows/ci.yml/badge.svg)](https://github.com/kylemwhite/mdz-reader/actions/workflows/ci.yml)
 
-**Moved from `markdownzip.org`** — This package extracts and packages the MDZ
-reader/viewer functionality previously embedded in the `markdownzip.org` website
-into a standalone, reusable npm library.
+This package provides a high-level MDZ viewer API for applications.
+It uses `mdz-core-js` for archive extraction and core MDZ logic, then adds
+rendering, adapters, and a viewer-focused developer experience.
 
 ## Install
 
@@ -21,9 +21,9 @@ Requires **Node.js ≥ 18** (or a modern browser with Fetch + `arrayBuffer` supp
 ```ts
 import { MdzViewer } from 'mdz-viewer';
 
-// Load a .mdz file from a URL
+// Load an .mdz file from a URL
 const bytes  = await fetch('example.mdz').then(r => r.arrayBuffer());
-const result = new MdzViewer().render(new Uint8Array(bytes));
+const result = await new MdzViewer().render(new Uint8Array(bytes));
 
 console.log(result.html);        // Rendered HTML string
 console.log(result.entryPoint);  // "index.md"
@@ -39,7 +39,7 @@ import { MdzViewer }    from 'mdz-viewer';
 document.querySelector('input[type="file"]')!.addEventListener('change', async (e) => {
   const file   = (e.target as HTMLInputElement).files![0];
   const bytes  = await loadFromBlob(file);
-  const result = new MdzViewer().render(bytes);
+  const result = await new MdzViewer().render(bytes);
   document.getElementById('content')!.innerHTML = result.html;
 });
 ```
@@ -49,7 +49,7 @@ document.querySelector('input[type="file"]')!.addEventListener('change', async (
 ```ts
 import { readMdz, readFileAsText } from 'mdz-viewer';
 
-const pkg      = readMdz(bytes);
+const pkg      = await readMdz(bytes);
 const markdown = readFileAsText(pkg, pkg.entryPoint);
 console.log(pkg.files.size);    // Number of files in the archive
 console.log(pkg.manifest?.mdz); // Spec version from manifest.json
@@ -68,7 +68,7 @@ const customRenderer: MarkdownRenderer = {
   },
 };
 
-const result = new MdzViewer().render(bytes, { renderer: customRenderer });
+const result = await new MdzViewer().render(bytes, { renderer: customRenderer });
 ```
 
 ## API
@@ -77,11 +77,12 @@ const result = new MdzViewer().render(bytes, { renderer: customRenderer });
 
 | Method | Description |
 |--------|-------------|
-| `render(data, options?)` | Parse a `.mdz` `Uint8Array` and render its entry-point to HTML. Returns a `RenderResult`. |
+| `render(data, options?)` | Parse a `.mdz` `Uint8Array` and render its entry-point to HTML. Returns a `Promise<RenderResult>`. |
 
 ### `readMdz(data)`
 
 Parses a raw `.mdz` binary into an `MdzPackage` (files map, manifest, entryPoint).
+Returns `Promise<MdzPackage>`.
 
 ### `readFileAsText(pkg, path)`
 

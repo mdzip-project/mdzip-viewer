@@ -12,10 +12,10 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Added
 
 - Initial scaffold for `mdz-viewer` npm package.
-- `readMdz(data)` — parse a raw `.mdz` (ZIP) binary into an `MdzPackage` with
+- `readMdz(data)` — parse a raw `.mdz` (ZIP) binary into a `Promise<MdzPackage>` with
   file map, manifest, and resolved entry point.
 - `readFileAsText(pkg, path)` — decode an archived file to a UTF-8 string.
-- `MdzViewer.render(data, options?)` — high-level API that reads and renders an
+- `MdzViewer.render(data, options?)` — high-level async API that reads and renders an
   MDZ archive to HTML in one call.
 - `MarkedRenderer` — default Markdown renderer backed by the `marked` library.
 - Pluggable `MarkdownRenderer` interface for custom rendering backends.
@@ -27,6 +27,3 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Full CI pipeline (lint, typecheck, test, build) via GitHub Actions.
 - ESM-only output with TypeScript declarations and source maps.
 
-### Migration note
-
-Viewer functionality moved from `markdownzip.org` into this standalone package.

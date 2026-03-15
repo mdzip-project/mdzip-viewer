@@ -33,7 +33,7 @@ import type { RenderOptions, RenderResult } from '../types.js';
  *
  * const viewer = new MdzViewer();
  * const bytes  = await fetch('my-doc.mdz').then(r => r.arrayBuffer());
- * const result = viewer.render(new Uint8Array(bytes));
+ * const result = await viewer.render(new Uint8Array(bytes));
  *
  * document.getElementById('content')!.innerHTML = result.html;
  * ```
@@ -44,7 +44,7 @@ export class MdzViewer {
    *
    * @param data    - Raw bytes of the `.mdz` (ZIP) file.
    * @param options - Optional render configuration.
-   * @returns        A {@link RenderResult} containing the HTML and metadata.
+    * @returns        A promise resolving to a {@link RenderResult} containing the HTML and metadata.
    *
    * @throws {MdzParseError}      If `data` is not a valid ZIP archive.
    * @throws {MdzEntryPointError} If no unambiguous entry point can be resolved
@@ -52,8 +52,8 @@ export class MdzViewer {
    * @throws {Error}              If the resolved entry-point file is missing from
    *                              the archive.
    */
-  render(data: Uint8Array, options: RenderOptions = {}): RenderResult {
-    const pkg = readMdz(data);
+  async render(data: Uint8Array, options: RenderOptions = {}): Promise<RenderResult> {
+    const pkg = await readMdz(data);
 
     const entryPoint = options.entryPoint ?? pkg.entryPoint;
     const renderer = options.renderer ?? getDefaultRenderer();

@@ -7,7 +7,7 @@
  * import { MdzViewer } from 'mdz-viewer';
  *
  * const bytes  = await fetch('example.mdz').then(r => r.arrayBuffer());
- * const result = new MdzViewer().render(new Uint8Array(bytes));
+ * const result = await new MdzViewer().render(new Uint8Array(bytes));
  *
  * console.log(result.html);       // rendered HTML
  * console.log(result.entryPoint); // "index.md"
@@ -19,7 +19,7 @@
  * ```ts
  * import { readMdz, readFileAsText } from 'mdz-viewer';
  *
- * const pkg      = readMdz(bytes);
+ * const pkg      = await readMdz(bytes);
  * const markdown = readFileAsText(pkg, pkg.entryPoint);
  * ```
  *

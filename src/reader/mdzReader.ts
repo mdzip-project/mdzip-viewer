@@ -2,7 +2,7 @@
  * Core MDZ archive reader.
  *
  * Parses a raw `.mdz` (ZIP) binary into an {@link MdzPackage}, performing:
- * - ZIP extraction via `fflate`
+ * - ZIP extraction via `mdz-core-js`
  * - Optional `manifest.json` parsing
  * - Entry-point discovery per the MDZ spec §5.5
  *
@@ -12,7 +12,7 @@
  * @module reader
  */
 
-import { unzipSync, type Unzipped } from 'fflate';
+import { MdzArchiveCore } from 'mdz-core-js';
 import type { MdzManifest, MdzPackage } from '../types.js';
 import { MdzEntryPointError, MdzParseError } from '../types.js';
 
@@ -22,6 +22,16 @@ import { MdzEntryPointError, MdzParseError } from '../types.js';
 
 const MANIFEST_PATH = 'manifest.json';
 const MARKDOWN_EXTENSIONS = new Set(['.md', '.markdown']);
+type ArchiveEntries = Record<string, Uint8Array>;
+
+interface ArchiveZipEntry {
+  dir: boolean;
+  async(kind: 'arraybuffer'): Promise<ArrayBuffer | string>;
+}
+
+interface ArchiveZipLike {
+  files: Record<string, ArchiveZipEntry>;
+}
 
 /** Returns true if `path` is a root-level Markdown file (no directory prefix). */
 function isRootMarkdown(path: string): boolean {
@@ -69,7 +79,7 @@ function parseManifest(bytes: Uint8Array): (MdzManifest & Record<string, unknown
  * 4. Otherwise, throw {@link MdzEntryPointError} with the candidate list.
  */
 function resolveEntryPoint(
-  entries: Unzipped,
+  entries: ArchiveEntries,
   manifest: (MdzManifest & Record<string, unknown>) | null,
 ): string {
   const paths = Object.keys(entries);
@@ -106,6 +116,43 @@ function resolveEntryPoint(
   );
 }
 
+/**
+ * Extract non-directory entries from an MDZ archive via mdz-core-js.
+ */
+async function extractEntries(data: Uint8Array): Promise<ArchiveEntries> {
+  let archive: MdzArchiveCore;
+  try {
+    archive = await MdzArchiveCore.open(data);
+  } catch (err) {
+    throw new MdzParseError(
+      `Failed to open MDZ archive: ${err instanceof Error ? err.message : String(err)}`,
+    );
+  }
+
+  const zip = (archive as unknown as { zip?: ArchiveZipLike }).zip;
+  if (!zip?.files || typeof zip.files !== 'object') {
+    throw new MdzParseError('Failed to read MDZ archive entries.');
+  }
+
+  const entries: ArchiveEntries = {};
+
+  for (const [rawPath, entry] of Object.entries(zip.files)) {
+    if (!entry || entry.dir) continue;
+
+    const path = MdzArchiveCore.normalizePath(rawPath);
+    try {
+      const bytes = await entry.async('arraybuffer');
+      entries[path] = new Uint8Array(bytes as ArrayBuffer);
+    } catch (err) {
+      throw new MdzParseError(
+        `Failed to extract MDZ entry "${path}": ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
+  }
+
+  return entries;
+}
+
 // ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
@@ -115,7 +162,7 @@ function resolveEntryPoint(
  *
  * @param data - The raw bytes of an `.mdz` (ZIP) file. Accepts both
  *               `Uint8Array` and `Buffer` (Node.js).
- * @returns      A fully-parsed {@link MdzPackage}.
+ * @returns      A promise resolving to a fully-parsed {@link MdzPackage}.
  *
  * @throws {MdzParseError}      If `data` is not a valid ZIP archive.
  * @throws {MdzEntryPointError} If no unambiguous entry point can be resolved.
@@ -125,19 +172,12 @@ function resolveEntryPoint(
  * import { readMdz } from 'mdz-viewer/reader';
  *
  * const bytes = await fetch('example.mdz').then(r => r.arrayBuffer());
- * const pkg = readMdz(new Uint8Array(bytes));
+ * const pkg = await readMdz(new Uint8Array(bytes));
  * console.log(pkg.entryPoint); // "index.md"
  * ```
  */
-export function readMdz(data: Uint8Array): MdzPackage {
-  let entries: Unzipped;
-  try {
-    entries = unzipSync(data);
-  } catch (err) {
-    throw new MdzParseError(
-      `Failed to unzip MDZ archive: ${err instanceof Error ? err.message : String(err)}`,
-    );
-  }
+export async function readMdz(data: Uint8Array): Promise<MdzPackage> {
+  const entries = await extractEntries(data);
 
   // Parse manifest (optional)
   const manifest = entries[MANIFEST_PATH] ? parseManifest(entries[MANIFEST_PATH]) : null;
