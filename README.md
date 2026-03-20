@@ -11,7 +11,7 @@ rendering, adapters, and a viewer-focused developer experience.
 ## Install
 
 ```sh
-npm install mdz-viewer
+npm install mdz-viewer (not yet)
 ```
 
 Requires **Node.js ≥ 18** (or a modern browser with Fetch + `arrayBuffer` support).
