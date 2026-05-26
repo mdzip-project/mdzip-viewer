@@ -2,7 +2,7 @@
  * Core MDZ archive reader.
  *
  * Parses a raw `.mdz` (ZIP) binary into an {@link MdzPackage}, performing:
- * - ZIP extraction via `mdz-core-js`
+ * - ZIP extraction via `mdzip-core-js`
  * - Optional `manifest.json` parsing
  * - Entry-point discovery per the MDZ spec §5.5
  *
@@ -12,7 +12,7 @@
  * @module reader
  */
 
-import { MdzArchiveCore } from 'mdz-core-js';
+import { MdzArchiveCore } from 'mdzip-core-js';
 import type { MdzManifest, MdzPackage } from '../types.js';
 import { MdzEntryPointError, MdzParseError } from '../types.js';
 
@@ -117,7 +117,7 @@ function resolveEntryPoint(
 }
 
 /**
- * Extract non-directory entries from an MDZ archive via mdz-core-js.
+ * Extract non-directory entries from an MDZ archive via mdzip-core-js.
  */
 async function extractEntries(data: Uint8Array): Promise<ArchiveEntries> {
   let archive: MdzArchiveCore;

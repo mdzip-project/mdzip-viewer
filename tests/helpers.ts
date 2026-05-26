@@ -1,11 +1,12 @@
 /**
  * Helpers shared across test files.
  *
- * Creates minimal in-memory ZIP archives using `mdz-core-js` so tests have
- * realistic MDZ fixtures without touching the file system.
+ * Creates minimal in-memory ZIP archives using JSZip directly so tests can
+ * construct any archive content, including intentionally invalid fixtures,
+ * without going through mdzip-core-js validation.
  */
 
-import { MdzPackagerCore } from 'mdz-core-js';
+import JSZip from 'jszip';
 
 /** Encode a string to UTF-8 bytes. */
 export function encode(text: string): Uint8Array {
@@ -14,24 +15,11 @@ export function encode(text: string): Uint8Array {
 
 /** Build a ZIP archive from a plain-object map of path → string contents. */
 export async function makeZip(files: Record<string, string>): Promise<Uint8Array> {
-  const packResult = await MdzPackagerCore.buildArchive(
-    Object.entries(files).map(([path, text]) => ({ path, text })),
-    'test',
-    {
-      createIndex: false,
-      mapFiles: false,
-      filters: ['**/*'],
-      title: null,
-      entryPoint: null,
-      language: null,
-      author: null,
-      description: null,
-      docVersion: null,
-    },
-  );
-
-  const bytes = await packResult.blob.arrayBuffer();
-  return new Uint8Array(bytes);
+  const zip = new JSZip();
+  for (const [path, content] of Object.entries(files)) {
+    zip.file(path, content);
+  }
+  return zip.generateAsync({ type: 'uint8array' });
 }
 
 /** A minimal valid manifest JSON string. */

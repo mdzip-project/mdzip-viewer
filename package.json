@@ -38,11 +38,12 @@
   "license": "Apache-2.0",
   "dependencies": {
     "marked": "^15.0.12",
-    "mdz-core-js": "^0.1.1"
+    "mdzip-core-js": "^1.1.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "eslint": "^9.0.0",
+    "jszip": "^3.10.1",
     "prettier": "^3.8.1",
     "tsup": "^8.5.1",
     "typescript": "^5.7.0",
