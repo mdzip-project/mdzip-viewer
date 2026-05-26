@@ -9,6 +9,8 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-05-25
+
 ### Added
 
 - Initial scaffold for `mdz-viewer` npm package.
@@ -26,4 +28,11 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   `.md` → error).
 - Full CI pipeline (lint, typecheck, test, build) via GitHub Actions.
 - ESM-only output with TypeScript declarations and source maps.
+- Plugin system — `ViewerPlugin` interface with `transformMarkdown` and
+  `transformHtml` hooks; pass plugins via `RenderOptions.plugins`.
+- `createDrawioPlugin(options?)` — built-in plugin that replaces `.drawio` image
+  references with `<div class="drawio-diagram" data-diagram-data="…">` nodes.
+- Browser compat helpers (`MdzReader`, `MdzArchiveService`, `MdzDocumentRenderer`,
+  `installBrowserGlobals`, and friends) for JSZip-based browser environments.
+- npm publish workflow triggered on GitHub release.
 

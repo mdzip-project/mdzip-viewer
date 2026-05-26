@@ -2,7 +2,7 @@
 
 > Render MarkdownZip (`.mdz`) files to HTML, powered by `mdz-core-js`.
 
-[![CI](https://github.com/kylemwhite/mdz-viewer/actions/workflows/ci.yml/badge.svg)](https://github.com/kylemwhite/mdz-viewer/actions/workflows/ci.yml)
+[![CI](https://github.com/mdzip-project/mdz-viewer/actions/workflows/ci.yml/badge.svg)](https://github.com/mdzip-project/mdz-viewer/actions/workflows/ci.yml)
 
 This package provides a high-level MDZ viewer API for applications.
 It uses `mdz-core-js` for archive extraction and core MDZ logic, then adds
@@ -11,7 +11,7 @@ rendering, adapters, and a viewer-focused developer experience.
 ## Install
 
 ```sh
-npm install mdz-viewer (not yet)
+npm install mdz-viewer
 ```
 
 Requires **Node.js ≥ 18** (or a modern browser with Fetch + `arrayBuffer` support).
@@ -63,13 +63,71 @@ import type { MarkdownRenderer } from 'mdz-viewer';
 
 const customRenderer: MarkdownRenderer = {
   render(markdown: string): string {
-    // Use any Markdown library you prefer
     return myMarkdownLib.render(markdown);
   },
 };
 
 const result = await new MdzViewer().render(bytes, { renderer: customRenderer });
 ```
+
+### Plugins
+
+Plugins can transform markdown before rendering and/or HTML after rendering.
+They are applied in declaration order.
+
+```ts
+import { MdzViewer } from 'mdz-viewer';
+import type { ViewerPlugin } from 'mdz-viewer';
+
+const myPlugin: ViewerPlugin = {
+  name: 'my-plugin',
+  transformMarkdown: (markdown, ctx) => markdown.replace(/foo/g, 'bar'),
+  transformHtml:     (html, ctx)     => html + '<!-- rendered -->',
+};
+
+const result = await new MdzViewer().render(bytes, { plugins: [myPlugin] });
+```
+
+#### Built-in: draw.io plugin
+
+Replaces `<img>` tags that reference `.drawio` files with
+`<div class="drawio-diagram" data-diagram-data="…">` nodes ready for the
+[draw.io embed viewer](https://www.drawio.com/blog/embedding-diagrams).
+
+```ts
+import { MdzViewer, createDrawioPlugin } from 'mdz-viewer';
+
+const result = await new MdzViewer().render(bytes, {
+  plugins: [createDrawioPlugin()],
+});
+```
+
+`createDrawioPlugin(options?)` accepts:
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `className` | `string` | CSS class on replacement nodes (default `"drawio-diagram"`) |
+| `diagramOptions` | `string` | JSON string forwarded as `data-diagram-options` |
+| `deflateRaw` | `(input: string) => Uint8Array` | Pass `pako.deflateRaw` to compress raw `<mxGraphModel>` XML |
+
+### Browser compat helpers
+
+For environments where `mdz-core-js` is not available (e.g. a plain `<script>`
+tag setup using JSZip directly) the package exports a JSZip-compatible layer:
+
+```ts
+import { MdzReader, installBrowserGlobals } from 'mdz-viewer';
+
+// Opt-in global installation for script-tag environments
+installBrowserGlobals();
+
+// Or use MdzReader directly
+const reader = await MdzReader.open(arrayBuffer, JSZip);
+const entryPoint = await reader.resolveEntryPoint();
+```
+
+Key exports: `MdzReader`, `MdzArchiveService`, `MdzDocumentRenderer`,
+`findEntry`, `resolveEntryPoint`, `resolveImages`, `resolvePath`, `MIME_TYPES`.
 
 ## API
 
@@ -106,6 +164,8 @@ src/
   viewer/           ← high-level render API
   rendering/        ← Markdown → HTML (pluggable)
   adapters/         ← environment helpers (Blob, URL)
+  plugins/          ← built-in viewer plugins (draw.io, …)
+  compat/           ← JSZip-compatible browser helpers
 ```
 
 ## Environment notes
