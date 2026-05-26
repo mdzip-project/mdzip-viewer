@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to `mdz-viewer` will be documented in this file.
+All notable changes to `mdzip-viewer` will be documented in this file.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and
 this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -13,7 +13,7 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
-- Initial scaffold for `mdz-viewer` npm package.
+- Initial scaffold for `mdzip-viewer` npm package.
 - `readMdz(data)` — parse a raw `.mdz` (ZIP) binary into a `Promise<MdzPackage>` with
   file map, manifest, and resolved entry point.
 - `readFileAsText(pkg, path)` — decode an archived file to a UTF-8 string.

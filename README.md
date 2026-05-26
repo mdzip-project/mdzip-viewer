@@ -1,8 +1,8 @@
-# mdz-viewer
+# mdzip-viewer
 
 > Render MarkdownZip (`.mdz`) files to HTML, powered by `mdz-core-js`.
 
-[![CI](https://github.com/mdzip-project/mdz-viewer/actions/workflows/ci.yml/badge.svg)](https://github.com/mdzip-project/mdz-viewer/actions/workflows/ci.yml)
+[![CI](https://github.com/mdzip-project/mdzip-viewer/actions/workflows/ci.yml/badge.svg)](https://github.com/mdzip-project/mdzip-viewer/actions/workflows/ci.yml)
 
 This package provides a high-level MDZ viewer API for applications.
 It uses `mdz-core-js` for archive extraction and core MDZ logic, then adds
@@ -11,7 +11,7 @@ rendering, adapters, and a viewer-focused developer experience.
 ## Install
 
 ```sh
-npm install mdz-viewer
+npm install mdzip-viewer
 ```
 
 Requires **Node.js ≥ 18** (or a modern browser with Fetch + `arrayBuffer` support).
@@ -19,7 +19,7 @@ Requires **Node.js ≥ 18** (or a modern browser with Fetch + `arrayBuffer` supp
 ## Quick Usage
 
 ```ts
-import { MdzViewer } from 'mdz-viewer';
+import { MdzViewer } from 'mdzip-viewer';
 
 // Load an .mdz file from a URL
 const bytes  = await fetch('example.mdz').then(r => r.arrayBuffer());
@@ -33,8 +33,8 @@ console.log(result.manifest);    // Parsed manifest.json, or null
 ### Browser — file input
 
 ```ts
-import { loadFromBlob } from 'mdz-viewer';
-import { MdzViewer }    from 'mdz-viewer';
+import { loadFromBlob } from 'mdzip-viewer';
+import { MdzViewer }    from 'mdzip-viewer';
 
 document.querySelector('input[type="file"]')!.addEventListener('change', async (e) => {
   const file   = (e.target as HTMLInputElement).files![0];
@@ -47,7 +47,7 @@ document.querySelector('input[type="file"]')!.addEventListener('change', async (
 ### Low-level API
 
 ```ts
-import { readMdz, readFileAsText } from 'mdz-viewer';
+import { readMdz, readFileAsText } from 'mdzip-viewer';
 
 const pkg      = await readMdz(bytes);
 const markdown = readFileAsText(pkg, pkg.entryPoint);
@@ -58,8 +58,8 @@ console.log(pkg.manifest?.mdz); // Spec version from manifest.json
 ### Custom Markdown renderer
 
 ```ts
-import { MdzViewer }       from 'mdz-viewer';
-import type { MarkdownRenderer } from 'mdz-viewer';
+import { MdzViewer }       from 'mdzip-viewer';
+import type { MarkdownRenderer } from 'mdzip-viewer';
 
 const customRenderer: MarkdownRenderer = {
   render(markdown: string): string {
@@ -76,8 +76,8 @@ Plugins can transform markdown before rendering and/or HTML after rendering.
 They are applied in declaration order.
 
 ```ts
-import { MdzViewer } from 'mdz-viewer';
-import type { ViewerPlugin } from 'mdz-viewer';
+import { MdzViewer } from 'mdzip-viewer';
+import type { ViewerPlugin } from 'mdzip-viewer';
 
 const myPlugin: ViewerPlugin = {
   name: 'my-plugin',
@@ -95,7 +95,7 @@ Replaces `<img>` tags that reference `.drawio` files with
 [draw.io embed viewer](https://www.drawio.com/blog/embedding-diagrams).
 
 ```ts
-import { MdzViewer, createDrawioPlugin } from 'mdz-viewer';
+import { MdzViewer, createDrawioPlugin } from 'mdzip-viewer';
 
 const result = await new MdzViewer().render(bytes, {
   plugins: [createDrawioPlugin()],
@@ -116,7 +116,7 @@ For environments where `mdz-core-js` is not available (e.g. a plain `<script>`
 tag setup using JSZip directly) the package exports a JSZip-compatible layer:
 
 ```ts
-import { MdzReader, installBrowserGlobals } from 'mdz-viewer';
+import { MdzReader, installBrowserGlobals } from 'mdzip-viewer';
 
 // Opt-in global installation for script-tag environments
 installBrowserGlobals();

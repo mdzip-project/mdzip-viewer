@@ -1,10 +1,10 @@
 /**
- * mdz-viewer — TypeScript viewer for MarkdownZip (.mdz) packages.
+ * mdzip-viewer — TypeScript viewer for MarkdownZip (.mdz) packages.
  *
  * ## Quick start
  *
  * ```ts
- * import { MdzViewer } from 'mdz-viewer';
+ * import { MdzViewer } from 'mdzip-viewer';
  *
  * const bytes  = await fetch('example.mdz').then(r => r.arrayBuffer());
  * const result = await new MdzViewer().render(new Uint8Array(bytes));
@@ -17,13 +17,13 @@
  * ## Lower-level API
  *
  * ```ts
- * import { readMdz, readFileAsText } from 'mdz-viewer';
+ * import { readMdz, readFileAsText } from 'mdzip-viewer';
  *
  * const pkg      = await readMdz(bytes);
  * const markdown = readFileAsText(pkg, pkg.entryPoint);
  * ```
  *
- * @module mdz-viewer
+ * @module mdzip-viewer
  */
 
 // Core types

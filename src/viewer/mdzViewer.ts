@@ -29,7 +29,7 @@ import type { RenderOptions, RenderResult, ViewerPluginContext } from '../types.
  *
  * @example
  * ```ts
- * import { MdzViewer } from 'mdz-viewer';
+ * import { MdzViewer } from 'mdzip-viewer';
  *
  * const viewer = new MdzViewer();
  * const bytes  = await fetch('my-doc.mdz').then(r => r.arrayBuffer());

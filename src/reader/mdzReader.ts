@@ -169,7 +169,7 @@ async function extractEntries(data: Uint8Array): Promise<ArchiveEntries> {
  *
  * @example
  * ```ts
- * import { readMdz } from 'mdz-viewer/reader';
+ * import { readMdz } from 'mdzip-viewer/reader';
  *
  * const bytes = await fetch('example.mdz').then(r => r.arrayBuffer());
  * const pkg = await readMdz(new Uint8Array(bytes));

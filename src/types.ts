@@ -1,5 +1,5 @@
 /**
- * Core types and interfaces for the mdz-viewer package.
+ * Core types and interfaces for the mdzip-viewer package.
  *
  * MDZ is the MarkdownZip format — a ZIP archive containing Markdown files and
  * optional assets, with an optional manifest.json at the archive root.

@@ -27,8 +27,8 @@
  *
  * @example
  * ```ts
- * import { loadFromBlob } from 'mdz-viewer/adapters';
- * import { MdzViewer }    from 'mdz-viewer';
+ * import { loadFromBlob } from 'mdzip-viewer/adapters';
+ * import { MdzViewer }    from 'mdzip-viewer';
  *
  * inputEl.addEventListener('change', async (e) => {
  *   const file   = (e.target as HTMLInputElement).files![0];
@@ -54,8 +54,8 @@ export async function loadFromBlob(file: Blob): Promise<Uint8Array> {
  *
  * @example
  * ```ts
- * import { loadFromUrl } from 'mdz-viewer/adapters';
- * import { MdzViewer }   from 'mdz-viewer';
+ * import { loadFromUrl } from 'mdzip-viewer/adapters';
+ * import { MdzViewer }   from 'mdzip-viewer';
  *
  * const bytes  = await loadFromUrl('/docs/guide.mdz');
  * const result = await new MdzViewer().render(bytes);

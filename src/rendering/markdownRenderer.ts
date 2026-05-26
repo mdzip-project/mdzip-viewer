@@ -27,7 +27,7 @@ import type { MarkdownRenderer } from '../types.js';
  *
  * @example
  * ```ts
- * import { MarkedRenderer } from 'mdz-viewer/rendering';
+ * import { MarkedRenderer } from 'mdzip-viewer/rendering';
  *
  * const renderer = new MarkedRenderer();
  * const html = renderer.render('# Hello');
