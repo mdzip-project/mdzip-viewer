@@ -1,6 +1,6 @@
 {
   "name": "mdzip-viewer",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "TypeScript viewer for MarkdownZip (.mdz) packages, published as an npm library.",
   "type": "module",
   "exports": {

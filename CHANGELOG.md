@@ -9,6 +9,13 @@ this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-05-25
+
+### Fixed
+
+- Corrected dependency name from `mdz-core-js` to `mdzip-core-js` and bumped to `^1.1.0`.
+- Replaced `MdzPackagerCore` in test helpers with JSZip directly to allow invalid-archive fixtures.
+
 ## [1.1.0] - 2026-05-25
 
 ### Added
