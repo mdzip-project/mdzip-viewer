@@ -17,7 +17,7 @@
 
 import { readMdz, readFileAsText } from '../reader/mdzReader.js';
 import { getDefaultRenderer } from '../rendering/markdownRenderer.js';
-import type { RenderOptions, RenderResult } from '../types.js';
+import type { RenderOptions, RenderResult, ViewerPluginContext } from '../types.js';
 
 // ---------------------------------------------------------------------------
 // Viewer
@@ -57,9 +57,22 @@ export class MdzViewer {
 
     const entryPoint = options.entryPoint ?? pkg.entryPoint;
     const renderer = options.renderer ?? getDefaultRenderer();
+    const plugins = options.plugins ?? [];
+    const pluginContext: ViewerPluginContext = { pkg, entryPoint };
 
-    const markdown = readFileAsText(pkg, entryPoint);
-    const html = renderer.render(markdown);
+    let markdown = readFileAsText(pkg, entryPoint);
+    for (const plugin of plugins) {
+      if (plugin.transformMarkdown) {
+        markdown = await plugin.transformMarkdown(markdown, pluginContext);
+      }
+    }
+
+    let html = renderer.render(markdown);
+    for (const plugin of plugins) {
+      if (plugin.transformHtml) {
+        html = await plugin.transformHtml(html, pluginContext);
+      }
+    }
 
     return { html, entryPoint, manifest: pkg.manifest };
   }

@@ -1,11 +1,12 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { MdzViewer } from '../src/viewer/index.js';
 import { MdzParseError } from '../src/types.js';
-import type { MarkdownRenderer } from '../src/types.js';
+import type { MarkdownRenderer, ViewerPlugin } from '../src/types.js';
+import { createDrawioPlugin } from '../src/plugins/index.js';
 import { makeZip, encode, minimalManifest } from './helpers.js';
 
 // ---------------------------------------------------------------------------
-// MdzViewer.render — happy path
+// MdzViewer.render - happy path
 // ---------------------------------------------------------------------------
 
 describe('MdzViewer.render', () => {
@@ -47,10 +48,10 @@ describe('MdzViewer.render', () => {
 });
 
 // ---------------------------------------------------------------------------
-// MdzViewer.render — options.entryPoint override
+// MdzViewer.render - options.entryPoint override
 // ---------------------------------------------------------------------------
 
-describe('MdzViewer.render — entryPoint override', () => {
+describe('MdzViewer.render - entryPoint override', () => {
   it('renders the overridden entry-point file', async () => {
     const zip = await makeZip({
       'manifest.json': minimalManifest({ entryPoint: 'chapter-01.md' }),
@@ -72,10 +73,10 @@ describe('MdzViewer.render — entryPoint override', () => {
 });
 
 // ---------------------------------------------------------------------------
-// MdzViewer.render — custom renderer
+// MdzViewer.render - custom renderer
 // ---------------------------------------------------------------------------
 
-describe('MdzViewer.render — custom renderer', () => {
+describe('MdzViewer.render - custom renderer', () => {
   it('uses the provided custom renderer', async () => {
     const customRenderer: MarkdownRenderer = {
       render: vi.fn().mockReturnValue('<p>custom</p>'),
@@ -103,10 +104,55 @@ describe('MdzViewer.render — custom renderer', () => {
 });
 
 // ---------------------------------------------------------------------------
-// MdzViewer.render — error propagation
+// MdzViewer.render - plugins
 // ---------------------------------------------------------------------------
 
-describe('MdzViewer.render — error propagation', () => {
+describe('MdzViewer.render - plugins', () => {
+  it('applies markdown and html transforms in plugin order', async () => {
+    const order: string[] = [];
+    const markdownPlugin: ViewerPlugin = {
+      name: 'md',
+      transformMarkdown: (markdown) => {
+        order.push('md');
+        return `${markdown}\n\nAppended paragraph.`;
+      },
+    };
+    const htmlPlugin: ViewerPlugin = {
+      name: 'html',
+      transformHtml: (html) => {
+        order.push('html');
+        return html.replace('</p>', ' transformed</p>');
+      },
+    };
+
+    const zip = await makeZip({ 'index.md': 'Hello' });
+    const result = await new MdzViewer().render(zip, { plugins: [markdownPlugin, htmlPlugin] });
+
+    expect(order).toEqual(['md', 'html']);
+    expect(result.html).toContain('Appended paragraph');
+    expect(result.html).toContain('transformed');
+  });
+
+  it('replaces drawio image tags with drawio diagram nodes via plugin', async () => {
+    const drawioXml = '<mxfile><diagram>ABC123==</diagram></mxfile>';
+    const zip = await makeZip({
+      'index.md': '![diagram](assets/diagram.drawio)',
+      'assets/diagram.drawio': drawioXml,
+    });
+
+    const result = await new MdzViewer().render(zip, { plugins: [createDrawioPlugin()] });
+
+    expect(result.html).toContain('class="drawio-diagram"');
+    expect(result.html).toContain('data-diagram-data="ABC123=="');
+    expect(result.html).not.toContain('<img');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// MdzViewer.render - error propagation
+// ---------------------------------------------------------------------------
+
+describe('MdzViewer.render - error propagation', () => {
   it('propagates MdzParseError for invalid ZIP input', async () => {
     const notZip = encode('not a zip');
     await expect(new MdzViewer().render(notZip)).rejects.toThrow(MdzParseError);

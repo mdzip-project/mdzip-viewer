@@ -32,6 +32,8 @@ export type {
   MdzAuthor,
   MdzPackage,
   MarkdownRenderer,
+  ViewerPlugin,
+  ViewerPluginContext,
   RenderOptions,
   RenderResult,
 } from './types.js';
@@ -48,3 +50,31 @@ export { MarkedRenderer, getDefaultRenderer, setDefaultRenderer } from './render
 
 // Adapters
 export { loadFromBlob, loadFromUrl } from './adapters/index.js';
+
+// Plugins
+export type { DrawioPluginOptions } from './plugins/index.js';
+export { createDrawioPlugin } from './plugins/index.js';
+
+// Browser compatibility helpers
+export type {
+  ZipAsyncKind,
+  ZipEntry,
+  ZipLike,
+  ZipFactoryLike,
+  ManifestLike,
+  MdzRenderOptions,
+  MdzRenderElements,
+} from './compat/browserHelpers.js';
+export {
+  MIME_TYPES,
+  MdzArchiveService,
+  MdzDocumentRenderer,
+  MdzReader,
+  findEntry,
+  resolveEntryPoint,
+  resolveImages,
+  resolvePath,
+  mdzReaderApi,
+  installBrowserGlobals,
+} from './compat/browserHelpers.js';
+

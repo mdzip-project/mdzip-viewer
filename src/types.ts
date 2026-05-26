@@ -98,6 +98,40 @@ export interface MarkdownRenderer {
 }
 
 // ---------------------------------------------------------------------------
+// Plugins
+// ---------------------------------------------------------------------------
+
+/** Shared context passed through viewer plugin hooks. */
+export interface ViewerPluginContext {
+  /** Parsed MDZ archive. */
+  pkg: MdzPackage;
+  /** Resolved entry-point path used for this render. */
+  entryPoint: string;
+}
+
+/**
+ * Optional viewer plugin hooks that can transform markdown before rendering
+ * and HTML after rendering.
+ */
+export interface ViewerPlugin {
+  /** Optional plugin identifier for diagnostics. */
+  name?: string;
+  /**
+   * Transform markdown before the renderer runs.
+   * Return the new markdown string; return the input unchanged to no-op.
+   */
+  transformMarkdown?: (
+    markdown: string,
+    context: ViewerPluginContext,
+  ) => string | Promise<string>;
+  /**
+   * Transform rendered HTML after the renderer runs.
+   * Return the new HTML string; return the input unchanged to no-op.
+   */
+  transformHtml?: (html: string, context: ViewerPluginContext) => string | Promise<string>;
+}
+
+// ---------------------------------------------------------------------------
 // Viewer options
 // ---------------------------------------------------------------------------
 
@@ -113,6 +147,8 @@ export interface RenderOptions {
    * Defaults to the built-in renderer backed by the `marked` library.
    */
   renderer?: MarkdownRenderer;
+  /** Optional plugins applied in declaration order. */
+  plugins?: ViewerPlugin[];
 }
 
 /** The result produced by {@link MdzViewer.render}. */

@@ -2,7 +2,7 @@
 
 > Render MarkdownZip (`.mdz`) files to HTML, powered by `mdz-core-js`.
 
-[![CI](https://github.com/kylemwhite/mdz-reader/actions/workflows/ci.yml/badge.svg)](https://github.com/kylemwhite/mdz-reader/actions/workflows/ci.yml)
+[![CI](https://github.com/kylemwhite/mdz-viewer/actions/workflows/ci.yml/badge.svg)](https://github.com/kylemwhite/mdz-viewer/actions/workflows/ci.yml)
 
 This package provides a high-level MDZ viewer API for applications.
 It uses `mdz-core-js` for archive extraction and core MDZ logic, then adds
