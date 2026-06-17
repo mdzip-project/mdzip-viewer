@@ -4,7 +4,7 @@
 
 This repository is no longer actively maintained.
 
-Please use [nmdzip-editor](https://github.com/mdzip-project/mdzip-editor) instead.
+Please use [mdzip-editor](https://github.com/mdzip-project/mdzip-editor) instead.
 
 This repository will remain available for historical reference.
 
